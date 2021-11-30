@@ -2,10 +2,14 @@
   "language": "typescript",
   "app": "npx ts-node main.ts",
   "projectId": "803982f1-7845-43e5-9e78-0795c7c502a7",
-  "terraformProviders": [],
+  "terraformProviders": [
+    "hashicorp/googleworkspace@ ~> 0.5.2",
+    "1Password/onepassword@ ~> 1.1.3",
+    "pablovarela/slack@ ~> 1.1.13"
+  ],
   "terraformModules": [],
   "context": {
     "excludeStackIdFromLogicalIds": "true",
-"allowSepCharsInLogicalIds": "true"
+    "allowSepCharsInLogicalIds": "true"
   }
 }

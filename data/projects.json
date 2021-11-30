@@ -1,0 +1,12 @@
+{
+  "umbrella": {
+    "name": "Project: Umbrella Corp",
+    "onepassword_vault": "demo_vault",
+    "github_repo": "umbrella-corp/umbrella-project"
+  },
+  "gutenberg": {
+    "name": "Project: Gutenberg",
+    "onepassword_vault": "demo_vault",
+    "github_repo": "gutenberg-corp/gutenberg-project"
+  }
+}

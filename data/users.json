@@ -1,0 +1,137 @@
+[
+  {
+    "name": "Christopher Bartoletti",
+    "github_user": "myuser",
+    "teams": ["accelerator"],
+    "projects": [],
+    "onepassword_vault": "demo_vault"
+  },
+  {
+    "name": "Leon Lynch",
+    "github_user": "myuser",
+    "teams": ["accelerator"],
+    "projects": ["gutenberg"],
+    "onepassword_vault": "demo_vault"
+  },
+  {
+    "name": "Mattie Johnston",
+    "github_user": "myuser",
+    "teams": ["controlling"],
+    "onepassword_vault": "demo_vault"
+  },
+  {
+    "name": "Marion Blick",
+    "github_user": "myuser",
+    "teams": ["accelerator"],
+    "projects": [],
+    "onepassword_vault": "demo_vault"
+  },
+  {
+    "name": "Eileen Dach",
+    "github_user": "myuser",
+    "teams": [],
+    "projects": [],
+    "onepassword_vault": "demo_vault"
+  },
+  {
+    "name": "Sonja Boyer",
+    "github_user": "myuser",
+    "teams": ["accelerator"],
+    "projects": [],
+    "onepassword_vault": "demo_vault"
+  },
+  {
+    "name": "Curtis Conroy",
+    "github_user": "myuser",
+    "teams": ["accelerator"],
+    "projects": [],
+    "onepassword_vault": "demo_vault"
+  },
+  {
+    "name": "Martin Sauer",
+    "github_user": "myuser",
+    "teams": ["enigma"],
+    "onepassword_vault": "demo_vault"
+  },
+  {
+    "name": "Harry Walsh II",
+    "github_user": "myuser",
+    "teams": [],
+    "projects": [],
+    "onepassword_vault": "demo_vault"
+  },
+  {
+    "name": "Julie Jenkins",
+    "github_user": "myuser",
+    "teams": ["enigma"],
+    "onepassword_vault": "demo_vault"
+  },
+  {
+    "name": "Ebony Ortiz",
+    "github_user": "myuser",
+    "teams": ["accelerator"],
+    "projects": [],
+    "onepassword_vault": "demo_vault"
+  },
+  {
+    "name": "Brandi Schuster IV",
+    "github_user": "myuser",
+    "teams": ["enigma"],
+    "onepassword_vault": "demo_vault"
+  },
+  {
+    "name": "Mrs. Marcus Wiegand",
+    "github_user": "myuser",
+    "teams": [],
+    "projects": [],
+    "onepassword_vault": "demo_vault"
+  },
+  {
+    "name": "Andres Mraz",
+    "github_user": "myuser",
+    "teams": ["accelerator"],
+    "projects": [],
+    "onepassword_vault": "demo_vault"
+  },
+  {
+    "name": "Earnest Goyette",
+    "github_user": "myuser",
+    "teams": ["accelerator"],
+    "projects": [],
+    "onepassword_vault": "demo_vault"
+  },
+  {
+    "name": "Patty Beatty",
+    "github_user": "myuser",
+    "teams": ["accelerator", "enigma"],
+    "projects": [],
+    "onepassword_vault": "demo_vault"
+  },
+  {
+    "name": "Malcolm Beer V",
+    "github_user": "myuser",
+    "teams": ["controlling"],
+    "onepassword_vault": "demo_vault"
+  },
+  {
+    "name": "Kristi Berge",
+    "github_user": "myuser",
+    "teams": ["accelerator"],
+    "projects": [],
+    "onepassword_vault": "demo_vault"
+  },
+  {
+    "name": "Toby Rath",
+    "github_user": "myuser",
+    "teams": ["accelerator"],
+    "projects": [],
+    "onepassword_vault": "demo_vault"
+  },
+  {
+    "name": "Ms. Louis Kling",
+    "github_user": "myuser",
+    "teams": ["accelerator"],
+    "projects": [],
+    "onepassword_vault": "demo_vault"
+  }
+]

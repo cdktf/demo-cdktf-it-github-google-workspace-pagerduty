@@ -1,0 +1,19 @@
+{
+  "accelerator": {
+    "name": "Development Accelerator",
+    "onepassword_vault": "demo_vault",
+    "dev": true,
+    "projects": ["umbrella"]
+  },
+  "enigma": {
+    "name": "Development Enigma",
+    "onepassword_vault": "demo_vault",
+    "dev": true,
+    "projects": ["gutenberg"]
+  },
+  "controlling": {
+    "name": "Controlling",
+    "onepassword_vault": "demo_vault",
+    "projects": []
+  }
+}

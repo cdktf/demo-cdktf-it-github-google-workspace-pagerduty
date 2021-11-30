@@ -1,87 +1,147 @@
 import "cdktf/lib/testing/adapters/jest"; // Load types for expect matchers
-// import { Testing } from "cdktf";
+import { Testing } from "cdktf";
+import { Project, Team, User } from "../main";
+import { Item } from "../.gen/providers/onepassword";
+import {
+  Group,
+  GroupMember,
+  User as GoogleUser,
+} from "../.gen/providers/googleworkspace";
+import {
+  TeamMembership,
+  Team as GhTeam,
+  Repository,
+  TeamRepository,
+} from "@cdktf/provider-github";
 
-describe("My CDKTF Application", () => {
-  // The tests below are example tests, you can find more information at
-  // https://cdk.tf/testing
-  it.todo("should be tested");
+import {
+  TeamMembership as PagerDutyTeamMembership,
+  Team as PagerDutyTeam,
+} from "@cdktf/provider-pagerduty";
+import { User as DatadogUser } from "@cdktf/provider-datadog";
 
-  // // All Unit testst test the synthesised terraform code, it does not create real-world resources
-  // describe("Unit testing using assertions", () => {
-  //   it("should contain a resource", () => {
-  //     // import { Image,Container } from "./.gen/providers/docker"
-  //     expect(
-  //       Testing.synthScope((scope) => {
-  //         new MyApplicationsAbstraction(scope, "my-app", {});
-  //       })
-  //     ).toHaveResource(Container);
+const userProps = {
+  name: "John Doe",
+  teams: [],
+  projects: [],
+  onepassword_vault: "1password",
+  github_user: "johndoe",
+};
 
-  //     expect(
-  //       Testing.synthScope((scope) => {
-  //         new MyApplicationsAbstraction(scope, "my-app", {});
-  //       })
-  //     ).toHaveResourceWithProperties(Image, { name: "ubuntu:latest" });
-  //   });
-  // });
+describe("My Companies IT setup", () => {
+  describe("User", () => {
+    it("should create a google account for everyone with a password in 1password", () => {
+      const synth = Testing.synthScope((scope) => {
+        new User(scope, userProps);
+      });
+      expect(synth).toHaveResource(Item);
+      expect(synth).toHaveResourceWithProperties(GoogleUser, {
+        primary_email: "john.doe@mycorp.com",
+      });
+    });
 
-  // describe("Unit testing using snapshots", () => {
-  //   it("Tests the snapshot", () => {
-  //     const app = Testing.app();
-  //     const stack = new TerraformStack(app, "test");
+    it("should create a data dog user", () => {
+      expect(
+        Testing.synthScope((scope) => {
+          new User(scope, userProps);
+        })
+      ).toHaveResource(DatadogUser);
+    });
+  });
 
-  //     new TestProvider(stack, "provider", {
-  //       accessKey: "1",
-  //     });
+  describe("Team", () => {
+    it("should create a group email", () => {
+      expect(
+        Testing.synthScope((scope) => {
+          new Team(scope, {
+            name: "My Team",
+            onepassword_vault: "1password",
+            projects: [],
+          });
+        })
+      ).toHaveResource(Group);
+    });
 
-  //     new TestResource(stack, "test", {
-  //       name: "my-resource",
-  //     });
+    it("should add users to the group", () => {
+      expect(
+        Testing.synthScope((scope) => {
+          const t = new Team(scope, {
+            name: "My Team",
+            onepassword_vault: "1password",
+            projects: [],
+          });
+          t.addUser(new User(scope, userProps));
+        })
+      ).toHaveResource(GroupMember);
+    });
 
-  //     expect(Testing.synth(stack)).toMatchSnapshot();
-  //   });
+    describe("Dev Teams", () => {
+      it("should create a github team and add users", () => {
+        const synth = Testing.synthScope((scope) => {
+          const t = new Team(scope, {
+            name: "My Team",
+            onepassword_vault: "1password",
+            projects: [],
+            dev: true,
+          });
+          t.addUser(new User(scope, userProps));
+        });
 
-  //   it("Tests a combination of resources", () => {
-  //     expect(
-  //       Testing.synthScope((stack) => {
-  //         new TestDataSource(stack, "test-data-source", {
-  //           name: "foo",
-  //         });
+        expect(synth).toHaveResource(TeamMembership);
+        expect(synth).toHaveResource(GhTeam);
+      });
 
-  //         new TestResource(stack, "test-resource", {
-  //           name: "bar",
-  //         });
-  //       })
-  //     ).toMatchInlineSnapshot();
-  //   });
-  // });
+      it("should create a github repo permissions to a user", () => {
+        expect(
+          Testing.synthScope((scope) => {
+            const t = new Team(scope, {
+              name: "My Team",
+              onepassword_vault: "1password",
+              projects: [],
+              dev: true,
+            });
+            t.giveRepoPermission(
+              new Repository(scope, "myRepo", {
+                name: "myRepo",
+              }),
+              "ADMIN"
+            );
+          })
+        ).toHaveResource(TeamRepository);
+      });
+    });
+  });
 
-  // describe("Checking validity", () => {
-  //   it("check if the produced terraform configuration is valid", () => {
-  //     const app = Testing.app();
-  //     const stack = new TerraformStack(app, "test");
+  describe("Project", () => {
+    it("should create a repo", () => {
+      expect(
+        Testing.synthScope((scope) => {
+          new Project(scope, {
+            name: "My Project",
+            onepassword_vault: "1password",
+            github_repo: "myRepo",
+          });
+        })
+      ).toHaveResourceWithProperties(Repository, {
+        name: "mycorp/myRepo",
+        visibility: "internal",
+      });
+    });
 
-  //     new TestDataSource(stack, "test-data-source", {
-  //       name: "foo",
-  //     });
+    it("should create a pager duty team and add the user", () => {
+      const synth = Testing.synthScope((scope) => {
+        const t = new Project(scope, {
+          name: "My Project",
+          onepassword_vault: "1password",
+          github_repo: "myRepo",
+        });
+        t.addUser(new User(scope, userProps));
+      });
 
-  //     new TestResource(stack, "test-resource", {
-  //       name: "bar",
-  //     });
-  //     expect(Testing.fullSynth(app)).toBeValidTerraform();
-  //   });
-
-  //   it("check if this can be planned", () => {
-  //     const app = Testing.app();
-  //     const stack = new TerraformStack(app, "test");
-
-  //     new TestDataSource(stack, "test-data-source", {
-  //       name: "foo",
-  //     });
-
-  //     new TestResource(stack, "test-resource", {
-  //       name: "bar",
-  //     });
-  //     expect(Testing.fullSynth(app)).toPlanSuccessfully();
-  //   });
-  // });
+      expect(synth).toHaveResourceWithProperties(PagerDutyTeam, {
+        name: "My Project",
+      });
+      expect(synth).toHaveResource(PagerDutyTeamMembership);
+    });
+  });
 });

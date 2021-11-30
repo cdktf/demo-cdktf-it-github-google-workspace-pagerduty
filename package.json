@@ -20,7 +20,10 @@
     "node": ">=10.12"
   },
   "dependencies": {
-    "cdktf": "^0.8.0-pre.14",
+    "@cdktf/provider-datadog": "^0.2.255",
+    "@cdktf/provider-github": "^0.3.245",
+    "@cdktf/provider-pagerduty": "^0.0.248",
+    "cdktf": "^0.7.0",
     "constructs": "^10.0.9"
   },
   "devDependencies": {
