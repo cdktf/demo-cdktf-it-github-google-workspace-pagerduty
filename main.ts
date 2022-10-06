@@ -10,8 +10,6 @@ import * as slack from "./.gen/providers/slack";
 import teams from "./data/teams.json";
 import users from "./data/users.json";
 import projects from "./data/projects.json";
-import { GroupMember } from "./.gen/providers/googleworkspace";
-import { TeamMembership } from "@cdktf/provider-pagerduty";
 
 const domain = "mycorp.com";
 const githubOrg = "mycorp";
@@ -20,7 +18,7 @@ class OrgMember extends Construct {
   constructor(scope: Construct, private org: OrgStructure, private user: User) {
     super(scope, `orgmember-${org.id}-${user.email}`);
 
-    new GroupMember(this, "member", {
+    new google.groupMember.GroupMember(this, "member", {
       groupId: org.group.id,
       email: user.email,
     });
@@ -30,11 +28,11 @@ class OrgMember extends Construct {
     if (!this.org.team) {
       return;
     }
-    const ghUser = new gh.DataGithubUser(this, "github-user", {
+    const ghUser = new gh.dataGithubUser.DataGithubUser(this, "github-user", {
       username: this.user.githubUser,
     });
 
-    new gh.TeamMembership(this, "team-membership", {
+    new gh.teamMembership.TeamMembership(this, "team-membership", {
       teamId: this.org.team.id,
       username: ghUser.name,
     });
@@ -42,20 +40,20 @@ class OrgMember extends Construct {
 }
 
 export class OrgStructure extends Construct {
-  public group: google.Group;
+  public group: google.group.Group;
   public id: string;
-  public team?: gh.Team;
+  public team?: gh.team.Team;
 
   constructor(scope: Construct, name: string, private isDev: boolean) {
     super(scope, `orgstructure-${name}`);
     this.id = name.replace(" ", "_").replace(":", "_");
-    this.group = new google.Group(this, "group", {
+    this.group = new google.group.Group(this, "group", {
       email: `${this.id}@${domain}`,
       name: name,
     });
 
     if (this.isDev) {
-      this.team = new gh.Team(this, "team", {
+      this.team = new gh.team.Team(this, "team", {
         name,
       });
     }
@@ -72,13 +70,13 @@ export class OrgStructure extends Construct {
   }
 
   public giveRepoPermission(
-    repo: gh.Repository,
-    permission?: gh.TeamRepositoryConfig["permission"]
+    repo: gh.repository.Repository,
+    permission?: gh.teamRepository.TeamRepositoryConfig["permission"]
   ) {
     if (!this.team) {
       return;
     }
-    new gh.TeamRepository(this, "team-repo", {
+    new gh.teamRepository.TeamRepository(this, "team-repo", {
       teamId: this.team.id,
       repository: repo.id,
       permission,
@@ -90,7 +88,7 @@ export class OrgStructure extends Construct {
     topic: string,
     isPrivate: boolean
   ) {
-    new slack.Conversation(this, "slack-channel", {
+    new slack.conversation.Conversation(this, "slack-channel", {
       name,
       topic,
       isPrivate,
@@ -120,7 +118,7 @@ The place for team related stuff.`,
 }
 
 export class Project extends OrgStructure {
-  private pdTeam: pd.Team;
+  private pdTeam: pd.team.Team;
 
   constructor(
     scope: Construct,
@@ -132,14 +130,14 @@ export class Project extends OrgStructure {
   ) {
     super(scope, `project-${props.name}`, true);
 
-    const repo = new gh.Repository(this, "repo", {
+    const repo = new gh.repository.Repository(this, "repo", {
       name: `${githubOrg}/${props.github_repo}`,
       visibility: "internal",
     });
 
     this.giveRepoPermission(repo);
 
-    this.pdTeam = new pd.Team(this, "pagerduty-team", {
+    this.pdTeam = new pd.team.Team(this, "pagerduty-team", {
       name: props.name,
     });
 
@@ -154,12 +152,12 @@ Please be aware that clients are in this channel.`,
   public addUser(user: User) {
     const orgMember = super.addUser(user);
 
-    const pdUser = new pd.User(orgMember, "pagerduty-user", {
+    const pdUser = new pd.user.User(orgMember, "pagerduty-user", {
       email: user.email,
       name: user.name,
     });
 
-    new TeamMembership(orgMember, "pagerduty-team", {
+    new pd.teamMembership.TeamMembership(orgMember, "pagerduty-team", {
       userId: pdUser.id,
       teamId: this.pdTeam.id,
     });
@@ -171,7 +169,7 @@ Please be aware that clients are in this channel.`,
 export class User extends Construct {
   public email: string;
   public githubUser: string;
-  public user: google.User;
+  public user: google.user.User;
   public name: string;
 
   constructor(
@@ -190,7 +188,7 @@ export class User extends Construct {
     this.githubUser = props.github_user;
     this.name = props.name;
 
-    const gmailPassword = new onepassword.Item(this, "gmail-password", {
+    const gmailPassword = new onepassword.item.Item(this, "gmail-password", {
       vault: props.onepassword_vault,
       category: "login",
       passwordRecipe: {
@@ -201,7 +199,7 @@ export class User extends Construct {
       },
     }).password;
 
-    this.user = new google.User(this, "user", {
+    this.user = new google.user.User(this, "user", {
       primaryEmail: email,
       password: gmailPassword,
       // Note for future self: handle names with more than one space
@@ -211,7 +209,7 @@ export class User extends Construct {
       },
     });
 
-    new dd.User(this, "datadog-user", {
+    new dd.user.User(this, "datadog-user", {
       email,
     });
 
@@ -223,8 +221,8 @@ class ITStack extends TerraformStack {
   constructor(scope: Construct, name: string) {
     super(scope, name);
 
-    new google.GoogleworkspaceProvider(this, "googleworkspace");
-    new onepassword.OnepasswordProvider(this, "onepassword", {
+    new google.provider.GoogleworkspaceProvider(this, "googleworkspace");
+    new onepassword.provider.OnepasswordProvider(this, "onepassword", {
       token: new TerraformVariable(this, "onepassword_token", {
         type: "string",
         sensitive: true,
@@ -232,15 +230,15 @@ class ITStack extends TerraformStack {
       url: new TerraformVariable(this, "onepassword_connect_url", {})
         .stringValue,
     });
-    new gh.GithubProvider(this, "github");
-    new pd.PagerdutyProvider(this, "pagerduty", {
+    new gh.provider.GithubProvider(this, "github");
+    new pd.provider.PagerdutyProvider(this, "pagerduty", {
       token: new TerraformVariable(this, "pagerduty_token", {
         type: "string",
         sensitive: true,
       }).stringValue,
     });
-    new dd.DatadogProvider(this, "datadog");
-    new slack.SlackProvider(this, "slack", {
+    new dd.provider.DatadogProvider(this, "datadog");
+    new slack.provider.SlackProvider(this, "slack", {
       token: new TerraformVariable(this, "slack_token", {
         type: "string",
         sensitive: true,
