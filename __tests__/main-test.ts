@@ -1,24 +1,24 @@
 import "cdktf/lib/testing/adapters/jest"; // Load types for expect matchers
 import { Testing } from "cdktf";
 import { Project, Team, User } from "../main";
-import { Item } from "../.gen/providers/onepassword";
+import { item } from "../.gen/providers/onepassword";
 import {
-  Group,
-  GroupMember,
-  User as GoogleUser,
+  group,
+  groupMember,
+  user as googleUser,
 } from "../.gen/providers/googleworkspace";
 import {
-  TeamMembership,
-  Team as GhTeam,
-  Repository,
-  TeamRepository,
+  teamMembership,
+  team as ghTeam,
+  repository,
+  teamRepository,
 } from "@cdktf/provider-github";
 
 import {
-  TeamMembership as PagerDutyTeamMembership,
-  Team as PagerDutyTeam,
+  teamMembership as pagerDutyTeamMembership,
+  team as pagerDutyTeam,
 } from "@cdktf/provider-pagerduty";
-import { User as DatadogUser } from "@cdktf/provider-datadog";
+import { user as datadogUser } from "@cdktf/provider-datadog";
 
 const userProps = {
   name: "John Doe",
@@ -34,8 +34,8 @@ describe("My Companies IT setup", () => {
       const synth = Testing.synthScope((scope) => {
         new User(scope, userProps);
       });
-      expect(synth).toHaveResource(Item);
-      expect(synth).toHaveResourceWithProperties(GoogleUser, {
+      expect(synth).toHaveResource(item.Item);
+      expect(synth).toHaveResourceWithProperties(googleUser.User, {
         primary_email: "john.doe@mycorp.com",
       });
     });
@@ -45,7 +45,7 @@ describe("My Companies IT setup", () => {
         Testing.synthScope((scope) => {
           new User(scope, userProps);
         })
-      ).toHaveResource(DatadogUser);
+      ).toHaveResource(datadogUser.User);
     });
   });
 
@@ -59,7 +59,7 @@ describe("My Companies IT setup", () => {
             projects: [],
           });
         })
-      ).toHaveResource(Group);
+      ).toHaveResource(group.Group);
     });
 
     it("should add users to the group", () => {
@@ -72,7 +72,7 @@ describe("My Companies IT setup", () => {
           });
           t.addUser(new User(scope, userProps));
         })
-      ).toHaveResource(GroupMember);
+      ).toHaveResource(groupMember.GroupMember);
     });
 
     describe("Dev Teams", () => {
@@ -87,8 +87,8 @@ describe("My Companies IT setup", () => {
           t.addUser(new User(scope, userProps));
         });
 
-        expect(synth).toHaveResource(TeamMembership);
-        expect(synth).toHaveResource(GhTeam);
+        expect(synth).toHaveResource(teamMembership.TeamMembership);
+        expect(synth).toHaveResource(ghTeam.Team);
       });
 
       it("should create a github repo permissions to a user", () => {
@@ -101,13 +101,13 @@ describe("My Companies IT setup", () => {
               dev: true,
             });
             t.giveRepoPermission(
-              new Repository(scope, "myRepo", {
+              new repository.Repository(scope, "myRepo", {
                 name: "myRepo",
               }),
               "ADMIN"
             );
           })
-        ).toHaveResource(TeamRepository);
+        ).toHaveResource(teamRepository.TeamRepository);
       });
     });
   });
@@ -122,7 +122,7 @@ describe("My Companies IT setup", () => {
             github_repo: "myRepo",
           });
         })
-      ).toHaveResourceWithProperties(Repository, {
+      ).toHaveResourceWithProperties(repository.Repository, {
         name: "mycorp/myRepo",
         visibility: "internal",
       });
@@ -138,10 +138,10 @@ describe("My Companies IT setup", () => {
         t.addUser(new User(scope, userProps));
       });
 
-      expect(synth).toHaveResourceWithProperties(PagerDutyTeam, {
+      expect(synth).toHaveResourceWithProperties(pagerDutyTeam.Team, {
         name: "My Project",
       });
-      expect(synth).toHaveResource(PagerDutyTeamMembership);
+      expect(synth).toHaveResource(pagerDutyTeamMembership.TeamMembership);
     });
   });
 });
